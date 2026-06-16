@@ -224,6 +224,7 @@
 
 <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"><span class="ti"></span><span id="toastMsg"></span></div>
+<input type="file" id="fileImport" accept="application/json" style="display:none">
 
 <script>
 "use strict";
@@ -584,7 +585,7 @@ let charts={};
 const GRID='rgba(255,255,255,.05)',TICK='#8A94A8';
 function dz(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
 function drawSavings(id,c,mini){
-  const el=$('#'+id);if(!el)return;dz(id);
+  const el=$('#'+id);if(!el||typeof Chart==='undefined')return;dz(id);
   const labels=MONDAYS.map((m,i)=>'S'+(i+1));
   charts[id]=new Chart(el,{type:'line',data:{labels,datasets:[
     {label:'Proyectado',data:c.plan,borderColor:'#626E85',borderWidth:2,borderDash:[5,5],pointRadius:0,tension:.35,fill:false},
@@ -593,12 +594,12 @@ function drawSavings(id,c,mini){
   ]},options:baseOpts(mini,true)});
 }
 function drawDoughnut(id,c){
-  const el=$('#'+id);if(!el)return;dz(id);
+  const el=$('#'+id);if(!el||typeof Chart==='undefined')return;dz(id);
   charts[id]=new Chart(el,{type:'doughnut',data:{labels:['Pagado','Restante'],datasets:[{data:[c.deudaPagada,c.deudaRestante],backgroundColor:['#2DD4A7','#283143'],borderWidth:0,hoverOffset:4}]},
     options:{cutout:'72%',plugins:{legend:{display:false},tooltip:tt()},responsive:true,maintainAspectRatio:false}});
 }
 function drawCat(id){
-  const el=$('#'+id);if(!el)return;dz(id);
+  const el=$('#'+id);if(!el||typeof Chart==='undefined')return;dz(id);
   const map={};state.movimientos.forEach(m=>{map[m.categoria]=(map[m.categoria]||0)+m.monto;});
   const order=['Efectivo','Tarjeta 1','Tarjeta 2','Comida','Higiene','Internet','Recargas'];
   const labels=[],data=[],cols=[];
@@ -609,7 +610,7 @@ function drawCat(id){
     options:{cutout:'58%',plugins:{legend:{position:'right',labels:{color:TICK,font:{family:'Inter',size:11.5},boxWidth:9,boxHeight:9,padding:9,usePointStyle:true}},tooltip:tt()},responsive:true,maintainAspectRatio:false}});
 }
 function drawInc(id){
-  const el=$('#'+id);if(!el)return;dz(id);
+  const el=$('#'+id);if(!el||typeof Chart==='undefined')return;dz(id);
   charts[id]=new Chart(el,{type:'bar',data:{labels:MONDAYS.map((m,i)=>'S'+(i+1)),datasets:[
     {label:'Esperado',data:state.ingresos.map(x=>x.esperado),backgroundColor:'#2A3344',borderRadius:5,barPercentage:.9,categoryPercentage:.7},
     {label:'Recibido',data:state.ingresos.map(x=>x.real),backgroundColor:'#2DD4A7',borderRadius:5,barPercentage:.9,categoryPercentage:.7}
@@ -641,7 +642,6 @@ function vAjustes(){
     <button class="btn btn-gho" id="btnExport">${I.down} Exportar respaldo</button>
     <button class="btn btn-gho" id="btnImport">${I.up} Importar respaldo</button>
   </div>
-  <input type="file" id="fileImport" accept="application/json" style="display:none">
 
   <div class="section-title">Zona de riesgo</div>
   <div class="card">
